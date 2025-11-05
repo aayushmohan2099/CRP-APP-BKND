@@ -149,6 +149,32 @@ class MasterShgList(models.Model):
     class Meta:
         db_table = "master_shg_list"
         managed = False
+        
+        
+class MasterClfList(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    clf_code = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    nic_code = models.CharField(max_length=100, null=True, blank=True)
+    block_id = models.BigIntegerField(null=True, blank=True)
+    district_id = models.BigIntegerField(null=True, blank=True)
+    state_id = models.IntegerField(null=True, blank=True)
+    formation_date = models.DateField(null=True, blank=True)
+    is_complete = models.BooleanField(null=True, blank=True)
+    pfms_verified = models.BooleanField(null=True, blank=True)
+    meeting_frequency = models.CharField(max_length=50, null=True, blank=True)
+    registration_act_name = models.CharField(max_length=255, null=True, blank=True)
+    registration_date = models.DateField(null=True, blank=True)
+    created_by = models.CharField(max_length=100, null=True, blank=True)
+    created_date = models.DateTimeField(null=True, blank=True)
+    updated_by = models.CharField(max_length=100, null=True, blank=True)
+    updated_date = models.DateTimeField(null=True, blank=True)
+    guid = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = "master_clf_list"
+        managed = False
 
 
 class MasterBeneficiary(models.Model):
