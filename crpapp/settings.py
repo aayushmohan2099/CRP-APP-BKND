@@ -5,7 +5,8 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-this-secret-for-dev')
+# ---- HARD-CODED SECRET (you asked to keep everything in settings.py) ----
+SECRET_KEY = 'replace-this-secret-for-dev-CHANGE-TO-PROD-SECRET'
 
 DEBUG = True
 
@@ -65,14 +66,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'crpapp.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# DATABASES - dual DB: default -> upsrlm_epsakhi, master -> upsrlm
+# --------------------- DATABASES (HARD-CODED) ---------------------
+# default -> upsrlm_epsakhi (Django-managed)
+# master -> upsrlm (shared master_* tables)
 DATABASES = {
-    # epsakhi data (Django-managed app tables, auth, caching table, background tasks etc.)
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'upsrlm_epsakhi',
         'USER': 'techno_sakhi_db',
-        'PASSWORD': 'techno@2025',   
+        'PASSWORD': 'techno@2025',
         'HOST': '204.11.58.166',
         'PORT': '3306',
         'OPTIONS': {
@@ -80,8 +82,6 @@ DATABASES = {
             'charset': 'utf8mb4'
         }
     },
-
-    # upsrlm master data (shared master_* tables used by multiple apps)
     'master': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'upsrlm',
@@ -96,20 +96,20 @@ DATABASES = {
     }
 }
 
-# Tell Django to use the router that routes core -> master DB
+# Database router: core -> master, others -> default
 DATABASE_ROUTERS = ['core.dbrouters.MasterDBRouter']
 
-# Cache — DB cache (no Redis)
+# --------------------- CACHE (DB-backed) ---------------------
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'django_cache_table',
     }
 }
+# createcachetable command for default DB:
+# python manage.py createcachetable --database=default
 
-# Create the cache table with: python manage.py createcachetable --database=default
-
-# Password validation — keep defaults
+# --------------------- AUTH / PASSWORDS ---------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -117,10 +117,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Use custom authentication backend (master_user)
+# Custom auth backend that uses master_user table
 AUTHENTICATION_BACKENDS = (
-    'core.backends.MasterUserBackend',  # custom backend to read from DB
-    'django.contrib.auth.backends.ModelBackend',  # fallback
+    'core.backends.MasterUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 LANGUAGE_CODE = 'en-us'
@@ -129,19 +129,28 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# --------------------- STATIC / MEDIA ---------------------
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'staticfiles'    # run collectstatic -> files go here
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'           # uploaded files (images, certificates)
 
-# DRF + JWT (simplejwt)
+# Ensure the /media/ directory exists
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+
+# --------------------- REST FRAMEWORK / JWT ---------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # No forced DEFAULT_PERMISSION_CLASSES here — your mobile app will send JWTs.
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50,
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter', 'rest_framework.filters.OrderingFilter'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter'
+    ],
 }
 
 SIMPLE_JWT = {
@@ -150,7 +159,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
 }
 
-# CORS - restrict later to mobile app origin if needed
+# CORS
 CORS_ALLOW_ALL_ORIGINS = True
 
 # File upload limits (enforced in code too)
