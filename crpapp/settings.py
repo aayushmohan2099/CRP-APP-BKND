@@ -63,20 +63,35 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'crpapp.wsgi.application'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Database - MySQL on Plesk
 DATABASES = {
+    # epsakhi data (Django-managed app tables, auth, caching table, background tasks etc.)
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME','upsrlm'),
-        'USER': os.environ.get('DB_USER','techno_dev'),
-        'PASSWORD': os.environ.get('DB_PASS','techno@2025'),
-        'HOST': os.environ.get('DB_HOST','204.11.58.166'),
-        'PORT': os.environ.get('DB_PORT','3306'),
+        'NAME': 'upsrlm_epsakhi',
+        'USER': 'techno_sakhi_db',
+        'PASSWORD': 'techno@2025',   
+        'HOST': '204.11.58.166',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8mb4',
-        },
+            'charset': 'utf8mb4'
+        }
+    },
+
+    # upsrlm master data (shared master_* tables used by multiple apps)
+    'master': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'upsrlm',
+        'USER': 'techno_dev',
+        'PASSWORD': 'techno@2025',         
+        'HOST': '204.11.58.166',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4'
+        }
     }
 }
 

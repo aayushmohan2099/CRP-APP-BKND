@@ -33,8 +33,7 @@ class CRPEP(SoftDeleteMixin):
         db_column='user_id',
         related_name='crpep_account',
         null=True,
-        blank=True,
-        unique=True
+        blank=True
     )
 
     name = models.CharField(max_length=255)
