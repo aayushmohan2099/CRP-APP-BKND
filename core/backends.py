@@ -12,6 +12,7 @@ class MasterUserBackend(BaseBackend):
     """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
+        # Route the lookup to master DB automatically via router; models are managed=False
         try:
             mu = MasterUser.objects.get(username=username)
         except MasterUser.DoesNotExist:

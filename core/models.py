@@ -1,7 +1,6 @@
 # core/models.py
 from django.db import models
 
-
 class MasterDistrict(models.Model):
     district_id = models.BigIntegerField(primary_key=True)
     district_code = models.CharField(max_length=50, null=True, blank=True)
@@ -18,7 +17,6 @@ class MasterDistrict(models.Model):
     class Meta:
         db_table = "master_district"
         managed = False
-
 
 class MasterBlock(models.Model):
     block_id = models.BigIntegerField(primary_key=True)
@@ -38,7 +36,6 @@ class MasterBlock(models.Model):
         db_table = "master_block"
         managed = False
 
-
 class MasterPanchayat(models.Model):
     panchayat_id = models.BigIntegerField(primary_key=True)
     state_id = models.IntegerField()
@@ -55,7 +52,6 @@ class MasterPanchayat(models.Model):
     class Meta:
         db_table = "master_panchayat"
         managed = False
-
 
 class MasterVillage(models.Model):
     village_id = models.BigIntegerField(primary_key=True)
@@ -74,7 +70,6 @@ class MasterVillage(models.Model):
     class Meta:
         db_table = "master_village"
         managed = False
-
 
 class MasterUser(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -122,7 +117,6 @@ class MasterUser(models.Model):
         db_table = "master_user"
         managed = False
 
-
 class MasterShgList(models.Model):
     id = models.BigAutoField(primary_key=True)
     shg_code = models.CharField(max_length=100, unique=True)
@@ -149,8 +143,7 @@ class MasterShgList(models.Model):
     class Meta:
         db_table = "master_shg_list"
         managed = False
-        
-        
+
 class MasterClfList(models.Model):
     id = models.BigAutoField(primary_key=True)
     clf_code = models.CharField(max_length=100, unique=True)
@@ -175,7 +168,6 @@ class MasterClfList(models.Model):
     class Meta:
         db_table = "master_clf_list"
         managed = False
-
 
 class MasterBeneficiary(models.Model):
     member_code = models.CharField(max_length=100, primary_key=True)

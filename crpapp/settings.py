@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'replace-this-secret-for-dev')
 
-DEBUG = True 
+DEBUG = True
 
-ALLOWED_HOSTS = ['ayush3bdo.pythonanywhere.com']  
+ALLOWED_HOSTS = ['ayush3bdo.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', 
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,7 +49,7 @@ ROOT_URLCONF = 'crpapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], 
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,6 +65,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'crpapp.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# DATABASES - dual DB: default -> upsrlm_epsakhi, master -> upsrlm
 DATABASES = {
     # epsakhi data (Django-managed app tables, auth, caching table, background tasks etc.)
     'default': {
@@ -85,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'upsrlm',
         'USER': 'techno_dev',
-        'PASSWORD': 'techno@2025',         
+        'PASSWORD': 'techno@2025',
         'HOST': '204.11.58.166',
         'PORT': '3306',
         'OPTIONS': {
@@ -95,6 +96,9 @@ DATABASES = {
     }
 }
 
+# Tell Django to use the router that routes core -> master DB
+DATABASE_ROUTERS = ['core.dbrouters.MasterDBRouter']
+
 # Cache — DB cache (no Redis)
 CACHES = {
     'default': {
@@ -103,7 +107,7 @@ CACHES = {
     }
 }
 
-# Create the cache table with: python manage.py createcachetable
+# Create the cache table with: python manage.py createcachetable --database=default
 
 # Password validation — keep defaults
 AUTH_PASSWORD_VALIDATORS = [
@@ -139,8 +143,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter', 'rest_framework.filters.OrderingFilter'],
 }
-
-from rest_framework_simplejwt.settings import api_settings as jwt_settings
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),

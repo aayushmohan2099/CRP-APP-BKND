@@ -19,13 +19,15 @@ class SoftDeleteMixin(models.Model):
 
     def hard_delete(self):
         super().delete()
-        
-        
+
+
 class CRPEP(SoftDeleteMixin):
     id = models.BigAutoField(primary_key=True)
-    district = models.ForeignKey('core.MasterDistrict', on_delete=models.PROTECT, db_column='district_id')
-    block = models.ForeignKey('core.MasterBlock', on_delete=models.PROTECT, db_column='block_id')
-    gram_panchayat = models.ForeignKey('core.MasterPanchayat', on_delete=models.PROTECT, db_column='panchayat_id')
+
+    # db_constraint=False because referenced tables live in the 'master' DB.
+    district = models.ForeignKey('core.MasterDistrict', on_delete=models.PROTECT, db_column='district_id', db_constraint=False)
+    block = models.ForeignKey('core.MasterBlock', on_delete=models.PROTECT, db_column='block_id', db_constraint=False)
+    gram_panchayat = models.ForeignKey('core.MasterPanchayat', on_delete=models.PROTECT, db_column='panchayat_id', db_constraint=False)
 
     master_user = models.ForeignKey(
         'core.MasterUser',
@@ -33,7 +35,8 @@ class CRPEP(SoftDeleteMixin):
         db_column='user_id',
         related_name='crpep_account',
         null=True,
-        blank=True
+        blank=True,
+        db_constraint=False
     )
 
     name = models.CharField(max_length=255)
@@ -43,7 +46,8 @@ class CRPEP(SoftDeleteMixin):
         blank=True,
         on_delete=models.PROTECT,
         db_column='shg_code',
-        to_field='shg_code'
+        to_field='shg_code',
+        db_constraint=False
     )
 
     nodal_clf = models.ForeignKey(
@@ -52,7 +56,9 @@ class CRPEP(SoftDeleteMixin):
         blank=True,
         on_delete=models.PROTECT,
         related_name='clf_nodal',
-        db_column='clf_code'
+        db_column='clf_code',
+        to_field='clf_code',
+        db_constraint=False
     )
 
     TH_urid = models.CharField(max_length=36, default=uuid.uuid4, editable=False)
@@ -73,7 +79,8 @@ class CRPEP(SoftDeleteMixin):
         blank=True,
         on_delete=models.SET_NULL,
         related_name='created_crpep',
-        db_column='created_by'
+        db_column='created_by',
+        db_constraint=False
     )
     updated_by = models.ForeignKey(
         'core.MasterUser',
@@ -81,7 +88,8 @@ class CRPEP(SoftDeleteMixin):
         blank=True,
         on_delete=models.SET_NULL,
         related_name='updated_crpep',
-        db_column='updated_by'
+        db_column='updated_by',
+        db_constraint=False
     )
     deleted_by = models.ForeignKey(
         'core.MasterUser',
@@ -89,15 +97,24 @@ class CRPEP(SoftDeleteMixin):
         blank=True,
         on_delete=models.SET_NULL,
         related_name='deleted_crpep',
-        db_column='deleted_by'
+        db_column='deleted_by',
+        db_constraint=False
     )
 
     class Meta:
         db_table = 'epSakhi_crpep'
 
+
 class BeneficiaryEnterprise(SoftDeleteMixin):
     id = models.BigAutoField(primary_key=True)
-    beneficiary = models.ForeignKey('core.MasterBeneficiary', on_delete=models.PROTECT, db_column='beneficiary_id', to_field='member_code')
+
+    beneficiary = models.ForeignKey(
+        'core.MasterBeneficiary',
+        on_delete=models.PROTECT,
+        db_column='beneficiary_id',
+        to_field='member_code',
+        db_constraint=False
+    )
     enterprise_name = models.CharField(max_length=255)
     enterprise_type = models.CharField(max_length=255, null=True, blank=True)
     ownership_type = models.CharField(max_length=255, null=True, blank=True)
@@ -137,7 +154,14 @@ class BeneficiaryEnterprise(SoftDeleteMixin):
     photo_entrepreneur = models.ImageField(upload_to='epSakhi/beneficiary_photos/%Y/%m/', null=True, blank=True)
     photo_product = models.ImageField(upload_to='epSakhi/product_photos/%Y/%m/', null=True, blank=True)
     certificate_docs = models.FileField(upload_to='epSakhi/certificates/%Y/%m/', null=True, blank=True)
-    recorded_by_user = models.ForeignKey('core.MasterUser', null=True, blank=True, on_delete=models.SET_NULL, db_column='recorded_by_user_id')
+    recorded_by_user = models.ForeignKey(
+        'core.MasterUser',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        db_column='recorded_by_user_id',
+        db_constraint=False
+    )
 
     class Meta:
         db_table = 'epSakhi_beneficiary_enterprise'
